@@ -45,10 +45,10 @@ class QDockWidget;
 namespace hpp {
   namespace plot {
     class HppMonitoringPlugin : public QObject, public gepetto::gui::PluginInterface,
-				public gepetto::gui::CorbaInterface
+				public gepetto::gui::ConnectionInterface
     {
       Q_OBJECT
-      Q_INTERFACES (gepetto::gui::PluginInterface gepetto::gui::CorbaInterface)
+      Q_INTERFACES (gepetto::gui::PluginInterface gepetto::gui::ConnectionInterface)
 #if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
       Q_PLUGIN_METADATA (IID "hpp-plot.hppmonitoringplugin")
 #endif
