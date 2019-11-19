@@ -33,6 +33,7 @@
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QFileDialog>
 #include <QPushButton>
 #include <QMenu>
 #include <QWheelEvent>
@@ -122,6 +123,8 @@ namespace hpp {
       algList_ = new QComboBox (this);
       algList_->addItems (QStringList () << "dot" << "neato" << "fdp" << "sfdp" << "twopi" << "circo");
              // << "patchwork" << "osage");
+      QPushButton* saveas = new QPushButton (
+            QIcon::fromTheme("document-save-as"), "&Save DOT file...", buttonBox_);
       QPushButton* refresh = new QPushButton (
             QIcon::fromTheme("view-refresh"), "&Refresh", buttonBox_);
       QPushButton* update = new QPushButton (
@@ -131,8 +134,10 @@ namespace hpp {
       hLayout->setAlignment(buttonBox_, Qt::AlignRight);
       hLayout->addSpacerItem(new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
       hLayout->addWidget(algList_);
+      hLayout->addWidget(saveas);
       hLayout->addWidget(update);
       hLayout->addWidget(refresh);
+      connect(saveas, SIGNAL (clicked ()), this, SLOT (saveDotFile()));
       connect(refresh, SIGNAL (clicked ()), this, SLOT (updateGraph()));
       connect(update, SIGNAL (clicked ()), this, SLOT (updateEdges()));
 
@@ -175,6 +180,15 @@ namespace hpp {
       if (layoutShouldBeFreed_) scene_->freeLayout ();
       scene_->applyLayout("nop2");
       layoutShouldBeFreed_ = true;
+    }
+
+    void GraphWidget::saveDotFile()
+    {
+      QString filename = QFileDialog::getSaveFileName(this, "Save DOT file",
+          "./graph.dot", tr("DOT files (*.dot)"));
+      if (!filename.isNull()) {
+        scene_->writeGraph (filename);
+      }
     }
 
     void GraphWidget::nodeContextMenu(QGVNode *node)

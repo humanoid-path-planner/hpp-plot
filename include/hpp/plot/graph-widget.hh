@@ -64,6 +64,7 @@ namespace hpp {
     public slots:
       void updateGraph ();
       void updateEdges ();
+      void saveDotFile ();
 
     protected slots:
       virtual void nodeContextMenu(QGVNode* node);
