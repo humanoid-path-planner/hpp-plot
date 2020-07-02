@@ -45,9 +45,9 @@ GEPETTO_GUI_PLUGIN(hppmonitoringplugin
 
   LINK_DEPENDENCIES
   ${PROJECT_NAME}
+  gepetto-viewer
+  gepetto-viewer-corba
 
   PKG_CONFIG_DEPENDENCIES
   qgv
-  gepetto-viewer
-  gepetto-viewer-corba
   )
