@@ -1,0 +1,22 @@
+<?xml version='1.0'?> 
+ <package format='2'> 
+ <name>hpp-plot</name> 
+ <version>0.0.0</version> 
+ <description>Plotting tools for HPP </description> 
+ 
+ <maintainer email='hpp@laas.fr'>Joseph Mirabel</maintainer> 
+ <license>LGPL</license> 
+ 
+ <!-- <url type='website'>https://github.com/humanoid-path-planner/hpp-plot </url> --> 
+ 
+ <author>Joseph Mirabel</author> 
+ <author>Florent Lamiraux et al.</author> 
+ 
+ <buildtool_depend>catkin</buildtool_depend> 
+
+ <depend>gepetto-viewer</depend>
+ <depend>gepetto-viewer-corba</depend> 
+
+ <depend>qgv</depend> 
+ <depend>hpp-manipulation-corba</depend> 
+</package>
