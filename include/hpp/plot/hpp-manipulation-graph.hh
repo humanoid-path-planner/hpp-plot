@@ -113,7 +113,7 @@ class HppManipulationGraphWidget : public GraphWidget {
     QString constraintStr;
     QGVNode* node;
 
-    ::hpp::ConfigProjStat_var configStat, pathStat;
+    ::hpp::ConfigProjStat configStat, pathStat;
     ::CORBA::Long freq;
     ::hpp::intSeq_var freqPerCC;
     NodeInfo();
@@ -126,7 +126,7 @@ class HppManipulationGraphWidget : public GraphWidget {
     QString shortStr;
     QGVEdge* edge;
 
-    ::hpp::ConfigProjStat_var configStat, pathStat;
+    ::hpp::ConfigProjStat configStat, pathStat;
     ::hpp::Names_t_var errors;
     ::hpp::intSeq_var freqs;
 

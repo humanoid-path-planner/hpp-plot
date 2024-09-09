@@ -271,15 +271,15 @@ void HppManipulationGraphWidget::updateStatistics() {
       QGVNode* node = dynamic_cast<QGVNode*>(elmt);
       if (node) {
         NodeInfo& ni = nodeInfos_[node];
-        manip_->graph()->getConfigProjectorStats(ni.id, ni.configStat.out(),
-                                                 ni.pathStat.out());
+        manip_->graph()->getConfigProjectorStats(ni.id, ni.configStat,
+                                                 ni.pathStat);
         ni.freq = manip_->graph()->getFrequencyOfNodeInRoadmap(
             ni.id, ni.freqPerCC.out());
-        float sr = (ni.configStat->nbObs > 0) ? (float)ni.configStat->success /
-                                                    (float)ni.configStat->nbObs
+        float sr = (ni.configStat.nbObs > 0) ? (float)ni.configStat.success /
+                                                    (float)ni.configStat.nbObs
                                               : 0.f / 0.f;
         QString colorcode =
-            (ni.configStat->nbObs > 0)
+            (ni.configStat.nbObs > 0)
                 ? QColor(255, (int)(sr * 255), (int)(sr * 255)).name()
                 : "white";
         const QString& fillcolor = node->getAttribute("fillcolor");
@@ -292,13 +292,13 @@ void HppManipulationGraphWidget::updateStatistics() {
       QGVEdge* edge = dynamic_cast<QGVEdge*>(elmt);
       if (edge) {
         EdgeInfo& ei = edgeInfos_[edge];
-        manip_->graph()->getConfigProjectorStats(ei.id, ei.configStat.out(),
-                                                 ei.pathStat.out());
+        manip_->graph()->getConfigProjectorStats(ei.id, ei.configStat,
+                                                 ei.pathStat);
         manip_->graph()->getEdgeStat(ei.id, ei.errors.out(), ei.freqs.out());
-        float sr = (ei.configStat->nbObs > 0) ? (float)ei.configStat->success /
-                                                    (float)ei.configStat->nbObs
+        float sr = (ei.configStat.nbObs > 0) ? (float)ei.configStat.success /
+                                                    (float)ei.configStat.nbObs
                                               : 0.f / 0.f;
-        QString colorcode = (ei.configStat->nbObs > 0)
+        QString colorcode = (ei.configStat.nbObs > 0)
                                 ? QColor(255 - (int)(sr * 255), 0, 0).name()
                                 : "";
         const QString& color = edge->getAttribute("color");
@@ -511,13 +511,13 @@ void HppManipulationGraphWidget::startStopUpdateStats(bool start) {
 
 HppManipulationGraphWidget::NodeInfo::NodeInfo()
     : id(-1), freq(0), freqPerCC(new ::hpp::intSeq()) {
-  initConfigProjStat(configStat.out());
-  initConfigProjStat(pathStat.out());
+  initConfigProjStat(configStat);
+  initConfigProjStat(pathStat);
 }
 
 HppManipulationGraphWidget::EdgeInfo::EdgeInfo() : id(-1), edge(NULL) {
-  initConfigProjStat(configStat.out());
-  initConfigProjStat(pathStat.out());
+  initConfigProjStat(configStat);
+  initConfigProjStat(pathStat);
   errors = new Names_t();
   freqs = new intSeq();
 }
