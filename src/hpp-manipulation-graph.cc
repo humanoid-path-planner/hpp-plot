@@ -276,8 +276,8 @@ void HppManipulationGraphWidget::updateStatistics() {
         ni.freq = manip_->graph()->getFrequencyOfNodeInRoadmap(
             ni.id, ni.freqPerCC.out());
         float sr = (ni.configStat.nbObs > 0) ? (float)ni.configStat.success /
-                                                    (float)ni.configStat.nbObs
-                                              : 0.f / 0.f;
+                                                   (float)ni.configStat.nbObs
+                                             : 0.f / 0.f;
         QString colorcode =
             (ni.configStat.nbObs > 0)
                 ? QColor(255, (int)(sr * 255), (int)(sr * 255)).name()
@@ -296,8 +296,8 @@ void HppManipulationGraphWidget::updateStatistics() {
                                                  ei.pathStat);
         manip_->graph()->getEdgeStat(ei.id, ei.errors.out(), ei.freqs.out());
         float sr = (ei.configStat.nbObs > 0) ? (float)ei.configStat.success /
-                                                    (float)ei.configStat.nbObs
-                                              : 0.f / 0.f;
+                                                   (float)ei.configStat.nbObs
+                                             : 0.f / 0.f;
         QString colorcode = (ei.configStat.nbObs > 0)
                                 ? QColor(255 - (int)(sr * 255), 0, 0).name()
                                 : "";
