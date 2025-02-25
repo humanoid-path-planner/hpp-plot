@@ -1,22 +1,33 @@
-<?xml version='1.0'?>
- <package format='2'>
- <name>hpp-plot</name>
- <version>6.0.0</version>
- <description>Plotting tools for HPP </description>
+<?xml version="1.0"?>
+<package format="3">
+  <name>hpp-plot</name>
+  <version>6.0.0</version>
+  <description>Plotting tools for HPP </description>
 
- <maintainer email='hpp@laas.fr'>Joseph Mirabel</maintainer>
- <license>LGPL</license>
+  <maintainer email="guilhem.saurel@laas.fr">Guilhem Saurel</maintainer>
 
- <!-- <url type='website'>https://github.com/humanoid-path-planner/hpp-plot </url> -->
+  <author>Joseph Mirabel</author>
+  <author>Florent Lamiraux et al.</author>
 
- <author>Joseph Mirabel</author>
- <author>Florent Lamiraux et al.</author>
+  <license>BSD-2</license>
 
- <buildtool_depend>catkin</buildtool_depend>
+  <url type="website">https://github.com/humanoid-path-planner/hpp-plot</url>
+  <url type="repository">https://github.com/humanoid-path-planner/hpp-plot</url>
+  <url type="bugtracker">https://github.com/humanoid-path-planner/hpp-plot/issues</url>
 
- <depend>gepetto-viewer</depend>
- <depend>gepetto-viewer-corba</depend>
+  <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
+  <buildtool_depend>cmake</buildtool_depend>
 
- <depend>qgv</depend>
- <depend>hpp-manipulation-corba</depend>
+  <build_depend>doxygen</build_depend>
+
+  <depend>gepetto-viewer</depend>
+  <depend>gepetto-viewer-corba</depend>
+  <depend>hpp-manipulation-corba</depend>
+  <!-- Required by CMake, but not available in rosdep -->
+  <!-- <depend>qgv</depend> -->
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
 </package>
