@@ -51,13 +51,13 @@
 
 namespace hpp {
 namespace plot {
-GraphView::GraphView(QWidget *parent) : QGraphicsView(parent) {
+GraphView::GraphView(QWidget* parent) : QGraphicsView(parent) {
   setTransformationAnchor(AnchorUnderMouse);
   setDragMode(ScrollHandDrag);
   setBackgroundBrush(QBrush(Qt::lightGray, Qt::SolidPattern));
 }
 
-void GraphView::wheelEvent(QWheelEvent *event) {
+void GraphView::wheelEvent(QWheelEvent* event) {
   if (event->modifiers() == Qt::ControlModifier) {
     qreal scaleFactor = qPow(2.0, event->delta() / 240.0);  // How fast we zoom
     qreal factor = transform()
@@ -69,7 +69,7 @@ void GraphView::wheelEvent(QWheelEvent *event) {
   }
 }
 
-GraphWidget::GraphWidget(QString name, QWidget *parent)
+GraphWidget::GraphWidget(QString name, QWidget* parent)
     : QWidget(parent),
       scene_(new QGVScene(name, 0)),
       buttonBox_(new QWidget()),
@@ -92,17 +92,17 @@ GraphWidget::GraphWidget(QString name, QWidget *parent)
   view_->setRenderHint(QPainter::Antialiasing);
   view_->setRenderHint(QPainter::TextAntialiasing);
 
-  QSplitter *splitter = new QSplitter();
+  QSplitter* splitter = new QSplitter();
   splitter->setOrientation(Qt::Horizontal);
-  QWidget *infoW = new QWidget();
-  QVBoxLayout *infoL = new QVBoxLayout();
+  QWidget* infoW = new QWidget();
+  QVBoxLayout* infoL = new QVBoxLayout();
   infoL->addWidget(elmtInfo_);
   // infoL->addWidget(loggingInfo_);
   infoL->addWidget(constraintInfo_);
   infoW->setLayout(infoL);
   splitter->addWidget(infoW);
   splitter->addWidget(view_);
-  QVBoxLayout *vl = new QVBoxLayout();
+  QVBoxLayout* vl = new QVBoxLayout();
   vl->addWidget(buttonBox_);
   vl->addWidget(splitter);
   splitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -112,16 +112,16 @@ GraphWidget::GraphWidget(QString name, QWidget *parent)
   // loggingInfo_->resize(loggingInfo_->minimumSize());
   view_->resize(splitter->width() - elmtInfo_->width(), splitter->height());
 
-  connect(scene_, SIGNAL(nodeContextMenu(QGVNode *)),
-          SLOT(nodeContextMenu(QGVNode *)));
-  connect(scene_, SIGNAL(nodeDoubleClick(QGVNode *)),
-          SLOT(nodeDoubleClick(QGVNode *)));
-  connect(scene_, SIGNAL(edgeContextMenu(QGVEdge *)),
-          SLOT(edgeContextMenu(QGVEdge *)));
-  connect(scene_, SIGNAL(edgeDoubleClick(QGVEdge *)),
-          SLOT(edgeDoubleClick(QGVEdge *)));
+  connect(scene_, SIGNAL(nodeContextMenu(QGVNode*)),
+          SLOT(nodeContextMenu(QGVNode*)));
+  connect(scene_, SIGNAL(nodeDoubleClick(QGVNode*)),
+          SLOT(nodeDoubleClick(QGVNode*)));
+  connect(scene_, SIGNAL(edgeContextMenu(QGVEdge*)),
+          SLOT(edgeContextMenu(QGVEdge*)));
+  connect(scene_, SIGNAL(edgeDoubleClick(QGVEdge*)),
+          SLOT(edgeDoubleClick(QGVEdge*)));
 
-  QHBoxLayout *hLayout = new QHBoxLayout(buttonBox_);
+  QHBoxLayout* hLayout = new QHBoxLayout(buttonBox_);
   hLayout->setMargin(0);
   algList_ = new QComboBox(this);
   algList_->addItems(QStringList() << "dot"
@@ -131,11 +131,11 @@ GraphWidget::GraphWidget(QString name, QWidget *parent)
                                    << "twopi"
                                    << "circo");
   // << "patchwork" << "osage");
-  QPushButton *saveas = new QPushButton(QIcon::fromTheme("document-save-as"),
+  QPushButton* saveas = new QPushButton(QIcon::fromTheme("document-save-as"),
                                         "&Save DOT file...", buttonBox_);
-  QPushButton *refresh =
+  QPushButton* refresh =
       new QPushButton(QIcon::fromTheme("view-refresh"), "&Refresh", buttonBox_);
-  QPushButton *update = new QPushButton(QIcon::fromTheme("view-refresh"),
+  QPushButton* update = new QPushButton(QIcon::fromTheme("view-refresh"),
                                         "&Update edges", buttonBox_);
   buttonBox_->setLayout(hLayout);
   buttonBox_->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -150,7 +150,7 @@ GraphWidget::GraphWidget(QString name, QWidget *parent)
   connect(refresh, SIGNAL(clicked()), this, SLOT(updateGraph()));
   connect(update, SIGNAL(clicked()), this, SLOT(updateEdges()));
 
-  connect(scene_, SIGNAL(nodeMouseRelease(QGVNode *)), this,
+  connect(scene_, SIGNAL(nodeMouseRelease(QGVNode*)), this,
           SLOT(updateEdges()));
 }
 
@@ -194,13 +194,13 @@ void GraphWidget::saveDotFile() {
   }
 }
 
-void GraphWidget::nodeContextMenu(QGVNode *node) { Q_UNUSED(node) }
+void GraphWidget::nodeContextMenu(QGVNode* node) { Q_UNUSED(node) }
 
-void GraphWidget::nodeDoubleClick(QGVNode *node) { Q_UNUSED(node) }
+void GraphWidget::nodeDoubleClick(QGVNode* node) { Q_UNUSED(node) }
 
-void hpp::plot::GraphWidget::edgeDoubleClick(QGVEdge *edge) { Q_UNUSED(edge) }
+void hpp::plot::GraphWidget::edgeDoubleClick(QGVEdge* edge) { Q_UNUSED(edge) }
 
-void hpp::plot::GraphWidget::edgeContextMenu(QGVEdge *edge) { Q_UNUSED(edge) }
+void hpp::plot::GraphWidget::edgeContextMenu(QGVEdge* edge) { Q_UNUSED(edge) }
 
 void GraphWidget::fillScene() {
   // Configure scene attributes
@@ -219,17 +219,17 @@ void GraphWidget::fillScene() {
   // scene_->setEdgeAttribute("dir", "both");
 
   // Add some nodes
-  QGVNode *node1 = scene_->addNode("BOX");
+  QGVNode* node1 = scene_->addNode("BOX");
   node1->setIcon(QIcon::fromTheme("view-refresh").pixmap(24, 24).toImage());
-  QGVNode *node2 = scene_->addNode("SERVER0");
+  QGVNode* node2 = scene_->addNode("SERVER0");
   node2->setIcon(QImage(":/icons/Gnome-Network-Transmit-64.png"));
   node2->setFlag(QGraphicsItem::ItemIsMovable, true);
   node2->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
-  QGVNode *node3 = scene_->addNode("SERVER1");
+  QGVNode* node3 = scene_->addNode("SERVER1");
   node3->setIcon(QImage(":/icons/Gnome-Network-Transmit-64.png"));
-  QGVNode *node4 = scene_->addNode("USER");
+  QGVNode* node4 = scene_->addNode("USER");
   node4->setIcon(QImage(":/icons/Gnome-Stock-Person-64.png"));
-  QGVNode *node5 = scene_->addNode("SWITCH");
+  QGVNode* node5 = scene_->addNode("SWITCH");
   node5->setIcon(QImage(":/icons/Gnome-Network-Server-64.png"));
 
   // Add some edges
@@ -249,18 +249,18 @@ void GraphWidget::fillScene() {
   scene_->addEdge(node4, node5, "ETH1");
   scene_->addEdge(node2, node5, "ETH2");
 
-  QGVSubGraph *sgraph = scene_->addSubGraph("SUB1");
+  QGVSubGraph* sgraph = scene_->addSubGraph("SUB1");
   sgraph->setAttribute("label", "OFFICE");
 
-  QGVNode *snode1 = sgraph->addNode("PC0152");
-  QGVNode *snode2 = sgraph->addNode("PC0153");
+  QGVNode* snode1 = sgraph->addNode("PC0152");
+  QGVNode* snode2 = sgraph->addNode("PC0153");
 
   scene_->addEdge(snode1, snode2, "RT7");
 
   scene_->addEdge(node3, snode1, "GB8");
   scene_->addEdge(node3, snode2, "TS9");
 
-  QGVSubGraph *ssgraph = sgraph->addSubGraph("SUB2");
+  QGVSubGraph* ssgraph = sgraph->addSubGraph("SUB2");
   ssgraph->setAttribute("label", "DESK");
   scene_->addEdge(snode1, ssgraph->addNode("PC0155"), "S10");
 }
