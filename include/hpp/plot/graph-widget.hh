@@ -59,12 +59,12 @@ class GraphWidget : public QWidget {
 
   ~GraphWidget();
 
- public slots:
+ public Q_SLOTS:
   void updateGraph();
   void updateEdges();
   void saveDotFile();
 
- protected slots:
+ protected Q_SLOTS:
   virtual void nodeContextMenu(QGVNode* node);
   virtual void nodeDoubleClick(QGVNode* node);
   virtual void edgeContextMenu(QGVEdge* edge);
