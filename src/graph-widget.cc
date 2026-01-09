@@ -149,6 +149,8 @@ GraphWidget::GraphWidget(QString name, QWidget* parent)
   connect(saveas, SIGNAL(clicked()), this, SLOT(saveDotFile()));
   connect(refresh, SIGNAL(clicked()), this, SLOT(updateGraph()));
   connect(update, SIGNAL(clicked()), this, SLOT(updateEdges()));
+  connect(algList_, SIGNAL(currentIndexChanged(int)), this,
+          SLOT(updateGraph()));
 
   connect(scene_, SIGNAL(nodeMouseRelease(QGVNode*)), this,
           SLOT(updateEdges()));
@@ -176,7 +178,7 @@ void GraphWidget::updateGraph() {
   // scene_->render("canon", "debug.dot");
 
   // Fit in view
-  //  view_->fitInView(scene_->sceneRect(), Qt::KeepAspectRatio);
+  view_->fitInView(scene_->sceneRect(), Qt::KeepAspectRatio);
 }
 
 void GraphWidget::updateEdges() {

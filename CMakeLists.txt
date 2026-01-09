@@ -58,6 +58,8 @@ else()
 endif()
 
 include("${JRL_CMAKE_MODULES}/hpp.cmake")
+include("${JRL_CMAKE_MODULES}/python.cmake")
+include("${JRL_CMAKE_MODULES}/boost.cmake")
 
 # Tells pkg-config to read qtversion from pkg config file.
 list(APPEND PKG_CONFIG_ADDITIONAL_VARIABLES qtversion cmake_plugin)
@@ -124,10 +126,17 @@ else(USE_QT4)
 endif(USE_QT4)
 
 add_project_dependency("hpp-manipulation-corba" REQUIRED)
+add_project_dependency("hpp-manipulation" REQUIRED)
 add_project_dependency("qgv" REQUIRED)
 
+# Python bindings for native graph viewer
+set(PYTHON_COMPONENTS Interpreter Development NumPy)
+findpython()
+search_for_boost_python()
+
 set(${PROJECT_NAME}_HEADERS include/hpp/plot/graph-widget.hh
-                            include/hpp/plot/hpp-manipulation-graph.hh)
+                            include/hpp/plot/hpp-manipulation-graph.hh
+                            include/hpp/plot/hpp-native-graph.hh)
 set(${PROJECT_NAME}_HEADERS_NOMOC)
 
 set(${PROJECT_NAME}_FORMS)
@@ -146,7 +155,8 @@ else(USE_QT4)
 endif(USE_QT4)
 add_definitions(${QT_DEFINITIONS})
 
-set(${PROJECT_NAME}_SOURCES src/graph-widget.cc src/hpp-manipulation-graph.cc)
+set(${PROJECT_NAME}_SOURCES src/graph-widget.cc src/hpp-manipulation-graph.cc
+                           src/hpp-native-graph.cc)
 
 add_library(
   ${PROJECT_NAME} SHARED
@@ -157,6 +167,7 @@ add_library(
 target_link_libraries(
   ${PROJECT_NAME}
   PUBLIC ${QT_LIBRARIES} hpp-manipulation-corba::hpp-manipulation-corba
+         hpp-manipulation::hpp-manipulation
          qgv::qgvcore)
 
 install(
@@ -166,3 +177,25 @@ install(
 
 add_subdirectory(bin)
 add_subdirectory(plugins)
+
+# Python module for native graph viewer
+add_library(pyhpp_plot_graph_viewer MODULE src/pyhpp_plot/graph_viewer.cc)
+target_link_boost_python(pyhpp_plot_graph_viewer PUBLIC)
+target_link_libraries(pyhpp_plot_graph_viewer
+  PUBLIC ${PROJECT_NAME}
+         ${QT_LIBRARIES}
+         hpp-manipulation::hpp-manipulation)
+target_include_directories(pyhpp_plot_graph_viewer PRIVATE
+  ${PYTHON_INCLUDE_DIRS})
+set_target_properties(pyhpp_plot_graph_viewer PROPERTIES
+  PREFIX ""
+  OUTPUT_NAME "graph_viewer"
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/pyhpp_plot")
+
+install(TARGETS pyhpp_plot_graph_viewer
+  DESTINATION "${PYTHON_SITELIB}/pyhpp_plot")
+
+file(WRITE "${CMAKE_BINARY_DIR}/pyhpp_plot/__init__.py"
+  "from .graph_viewer import show_graph\n")
+install(FILES "${CMAKE_BINARY_DIR}/pyhpp_plot/__init__.py"
+  DESTINATION "${PYTHON_SITELIB}/pyhpp_plot")
