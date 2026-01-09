@@ -28,11 +28,10 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
-#include <boost/python.hpp>
-#include <boost/python/extract.hpp>
-
 #include <QApplication>
 #include <QMainWindow>
+#include <boost/python.hpp>
+#include <boost/python/extract.hpp>
 #include <hpp/manipulation/graph/graph.hh>
 #include <hpp/plot/hpp-native-graph.hh>
 
@@ -109,10 +108,9 @@ void showGraphBlocking(bp::object py_graph) {
 }  // namespace
 
 BOOST_PYTHON_MODULE(graph_viewer) {
-  bp::def(
-      "show_graph", &showGraphBlocking, bp::arg("graph"),
-      "Show constraint graph in a Qt viewer (blocking).\n\n"
-      "This function blocks until the viewer window is closed.\n\n"
-      "Args:\n"
-      "    graph: The Graph object from pyhpp.manipulation\n");
+  bp::def("show_graph", &showGraphBlocking, bp::arg("graph"),
+          "Show constraint graph in a Qt viewer (blocking).\n\n"
+          "This function blocks until the viewer window is closed.\n\n"
+          "Args:\n"
+          "    graph: The Graph object from pyhpp.manipulation\n");
 }

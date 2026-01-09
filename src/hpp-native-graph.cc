@@ -420,19 +420,16 @@ void HppNativeGraphWidget::nodeContextMenu(QGVNode* node) {
 
   QMenu cm("Node context menu", this);
 
-  cm.addAction("Show constraints", [this, &ni]() {
-    constraintInfo_->setText(ni.constraintStr);
-  });
+  cm.addAction("Show constraints",
+               [this, &ni]() { constraintInfo_->setText(ni.constraintStr); });
 
-  cm.addAction("Show detailed constraints", [this, &ni]() {
-    displayStateConstraints(ni.id);
-  });
+  cm.addAction("Show detailed constraints",
+               [this, &ni]() { displayStateConstraints(ni.id); });
 
   cm.addSeparator();
 
-  cm.addAction("Highlight this state", [this, &ni]() {
-    highlightNode(static_cast<long>(ni.id));
-  });
+  cm.addAction("Highlight this state",
+               [this, &ni]() { highlightNode(static_cast<long>(ni.id)); });
 
   cm.addAction("Clear highlight", [this]() { highlightNode(-1); });
 
@@ -459,29 +456,25 @@ void HppNativeGraphWidget::edgeContextMenu(QGVEdge* edge) {
 
   QMenu cm("Edge context menu", this);
 
-  cm.addAction("Show constraints", [this, &ei]() {
-    constraintInfo_->setText(ei.constraintStr);
-  });
+  cm.addAction("Show constraints",
+               [this, &ei]() { constraintInfo_->setText(ei.constraintStr); });
 
-  cm.addAction("Show detailed constraints", [this, &ei]() {
-    displayEdgeConstraints(ei.id);
-  });
+  cm.addAction("Show detailed constraints",
+               [this, &ei]() { displayEdgeConstraints(ei.id); });
 
-  cm.addAction("Show target constraints", [this, &ei]() {
-    displayEdgeTargetConstraints(ei.id);
-  });
+  cm.addAction("Show target constraints",
+               [this, &ei]() { displayEdgeTargetConstraints(ei.id); });
 
   cm.addSeparator();
 
   cm.addAction(QString("Weight: %1").arg(ei.weight), []() {
-    // Weight display only - modification requires ProblemSolver access
-  })->setEnabled(false);
+      // Weight display only - modification requires ProblemSolver access
+    })->setEnabled(false);
 
   cm.addSeparator();
 
-  cm.addAction("Highlight this edge", [this, &ei]() {
-    highlightEdge(static_cast<long>(ei.id));
-  });
+  cm.addAction("Highlight this edge",
+               [this, &ei]() { highlightEdge(static_cast<long>(ei.id)); });
 
   cm.addAction("Clear highlight", [this]() { highlightEdge(-1); });
 
