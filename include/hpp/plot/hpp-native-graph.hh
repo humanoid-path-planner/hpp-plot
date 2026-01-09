@@ -93,10 +93,10 @@ class HppNativeGraphWidget : public GraphWidget {
   void fillScene() override;
 
  protected Q_SLOTS:
-  virtual void nodeContextMenu(QGVNode* node);
-  virtual void nodeDoubleClick(QGVNode* node);
-  virtual void edgeContextMenu(QGVEdge* edge);
-  virtual void edgeDoubleClick(QGVEdge* edge);
+  void nodeContextMenu(QGVNode* node) override;
+  void nodeDoubleClick(QGVNode* node) override;
+  void edgeContextMenu(QGVEdge* edge) override;
+  void edgeDoubleClick(QGVEdge* edge) override;
   void selectionChanged();
 
  private:
