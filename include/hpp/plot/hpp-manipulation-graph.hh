@@ -52,10 +52,10 @@ class GraphAction : public QAction {
  public:
   GraphAction(HppManipulationGraphWidget* parent);
 
- signals:
+ Q_SIGNALS:
   void activated(hpp::ID id);
 
- private slots:
+ private Q_SLOTS:
   void transferSignal();
 
  private:
@@ -83,14 +83,14 @@ class HppManipulationGraphWidget : public GraphWidget {
  protected:
   void fillScene();
 
- public slots:
+ public Q_SLOTS:
   void updateStatistics();
   void showNodeOfConfiguration(const hpp::floatSeq& cfg);
   void displayNodeConstraint(hpp::ID id);
   void displayEdgeConstraint(hpp::ID id);
   void displayEdgeTargetConstraint(hpp::ID id);
 
- protected slots:
+ protected Q_SLOTS:
   virtual void nodeContextMenu(QGVNode* node);
   virtual void nodeDoubleClick(QGVNode* node);
   virtual void edgeContextMenu(QGVEdge* edge);
@@ -98,7 +98,7 @@ class HppManipulationGraphWidget : public GraphWidget {
 
   void selectionChanged();
 
- private slots:
+ private Q_SLOTS:
   void startStopUpdateStats(bool start);
 
  private:

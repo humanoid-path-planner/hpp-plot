@@ -77,7 +77,7 @@ class HppNativeGraphWidget : public GraphWidget {
   /// \param edgeId The ID of the edge to highlight, or -1 to clear
   void highlightEdge(long edgeId);
 
- public slots:
+ public Q_SLOTS:
   /// \brief Display detailed state constraints in the constraint panel
   void displayStateConstraints(std::size_t id);
 
@@ -92,7 +92,7 @@ class HppNativeGraphWidget : public GraphWidget {
   /// Reads nodes and edges directly from the C++ graph structure
   void fillScene() override;
 
- protected slots:
+ protected Q_SLOTS:
   virtual void nodeContextMenu(QGVNode* node);
   virtual void nodeDoubleClick(QGVNode* node);
   virtual void edgeContextMenu(QGVEdge* edge);

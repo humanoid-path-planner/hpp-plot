@@ -35,6 +35,14 @@
 #include <hpp/manipulation/graph/graph.hh>
 #include <hpp/plot/hpp-native-graph.hh>
 
+// Workaround for Qt/Python keyword conflict (Python 3.13+)
+#undef slots
+#undef signals
+#undef emit
+
+#include <boost/python.hpp>
+#include <boost/python/extract.hpp>
+
 namespace bp = boost::python;
 
 namespace {
