@@ -181,9 +181,9 @@ add_subdirectory(plugins)
 add_library(pyhpp_plot_graph_viewer MODULE src/pyhpp_plot/graph_viewer.cc)
 target_link_boost_python(pyhpp_plot_graph_viewer PUBLIC)
 target_link_libraries(
-  pyhpp_plot_graph_viewer PUBLIC ${PROJECT_NAME} ${QT_LIBRARIES}
-                                 hpp-manipulation::hpp-manipulation
-                                 ${PYTHON_LIBRARIES})
+  pyhpp_plot_graph_viewer
+  PUBLIC ${PROJECT_NAME} ${QT_LIBRARIES} hpp-manipulation::hpp-manipulation
+         ${PYTHON_LIBRARIES})
 target_include_directories(pyhpp_plot_graph_viewer
                            PRIVATE ${PYTHON_INCLUDE_DIRS})
 set_target_properties(
