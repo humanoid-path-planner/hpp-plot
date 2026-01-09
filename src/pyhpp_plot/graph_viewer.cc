@@ -28,14 +28,15 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
+
+// Include Qt and HPP headers first (these define Qt's 'slots' macro)
 #include <QApplication>
 #include <QMainWindow>
-#include <boost/python.hpp>
-#include <boost/python/extract.hpp>
 #include <hpp/manipulation/graph/graph.hh>
 #include <hpp/plot/hpp-native-graph.hh>
 
 // Workaround for Qt/Python keyword conflict (Python 3.13+)
+// Must undef Qt keywords before including Python headers
 #undef slots
 #undef signals
 #undef emit
