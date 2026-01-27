@@ -29,9 +29,16 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// Include Qt and HPP headers first (these define Qt's 'slots' macro)
+// clang-format off
+// Boost.Python must be included before Qt headers to avoid keyword conflicts
+// Prevent pre commit from reorganizing includes alphabetically
+#include <boost/python.hpp>
+#include <boost/python/extract.hpp>
+
 #include <QApplication>
 #include <QMainWindow>
+// clang-format on
+
 #include <hpp/manipulation/graph/graph.hh>
 #include <hpp/plot/hpp-native-graph.hh>
 
