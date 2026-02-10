@@ -433,6 +433,9 @@ void HppNativeGraphWidget::nodeContextMenu(QGVNode* node) {
 
   cm.addAction("Clear highlight", [this]() { highlightNode(-1); });
 
+  // Allow external code (Python) to add custom actions
+  Q_EMIT nodeContextMenuAboutToShow(ni.id, ni.name, &cm);
+
   cm.exec(QCursor::pos());
 
   currentId_ = savedId;
@@ -477,6 +480,9 @@ void HppNativeGraphWidget::edgeContextMenu(QGVEdge* edge) {
                [this, &ei]() { highlightEdge(static_cast<long>(ei.id)); });
 
   cm.addAction("Clear highlight", [this]() { highlightEdge(-1); });
+
+  // Allow external code (Python) to add custom actions
+  Q_EMIT edgeContextMenuAboutToShow(ei.id, ei.name, &cm);
 
   cm.exec(QCursor::pos());
 
