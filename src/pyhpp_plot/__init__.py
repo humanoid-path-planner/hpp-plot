@@ -11,11 +11,11 @@ from .interactive_viewer import (
 )
 
 __all__ = [
+    "GraphViewerThread",
+    "InteractiveGraphViewer",
+    "MenuActionProxy",
     "show_graph",
     "show_graph_blocking",
     "show_interactive_graph",
-    "MenuActionProxy",
-    "InteractiveGraphViewer",
-    "GraphViewerThread",
     "show_interactive_graph_threaded",
 ]

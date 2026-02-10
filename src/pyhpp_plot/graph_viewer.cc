@@ -90,7 +90,7 @@ GraphPtr_t extractGraph(bp::object py_graph) {
 
 /// Simple wrapper to allow Python to add menu actions
 class MenuActionProxy {
-public:
+ public:
   MenuActionProxy(QMenu* menu) : menu_(menu) {}
 
   void addAction(const std::string& text, bp::object callback) {
@@ -105,11 +105,9 @@ public:
     });
   }
 
-  void addSeparator() {
-    menu_->addSeparator();
-  }
+  void addSeparator() { menu_->addSeparator(); }
 
-private:
+ private:
   QMenu* menu_;
 };
 
@@ -147,9 +145,8 @@ void showGraphBlocking(bp::object py_graph) {
 }
 
 /// Interactive version with Python callbacks for context menus
-void showInteractiveGraph(bp::object py_graph,
-                         bp::object node_callback,
-                         bp::object edge_callback) {
+void showInteractiveGraph(bp::object py_graph, bp::object node_callback,
+                          bp::object edge_callback) {
   GraphPtr_t graph = extractGraph(py_graph);
 
   if (!graph) {
@@ -175,27 +172,29 @@ void showInteractiveGraph(bp::object py_graph,
 
   // Connect Qt signals to Python callbacks
   if (!node_callback.is_none()) {
-    QObject::connect(&widget, &hpp::plot::HppNativeGraphWidget::nodeContextMenuAboutToShow,
-                    [node_callback](std::size_t nodeId, QString nodeName, QMenu* menu) {
-      try {
-        MenuActionProxy proxy(menu);
-        node_callback(nodeId, nodeName.toStdString(), boost::ref(proxy));
-      } catch (const bp::error_already_set&) {
-        PyErr_Print();
-      }
-    });
+    QObject::connect(
+        &widget, &hpp::plot::HppNativeGraphWidget::nodeContextMenuAboutToShow,
+        [node_callback](std::size_t nodeId, QString nodeName, QMenu* menu) {
+          try {
+            MenuActionProxy proxy(menu);
+            node_callback(nodeId, nodeName.toStdString(), boost::ref(proxy));
+          } catch (const bp::error_already_set&) {
+            PyErr_Print();
+          }
+        });
   }
 
   if (!edge_callback.is_none()) {
-    QObject::connect(&widget, &hpp::plot::HppNativeGraphWidget::edgeContextMenuAboutToShow,
-                    [edge_callback](std::size_t edgeId, QString edgeName, QMenu* menu) {
-      try {
-        MenuActionProxy proxy(menu);
-        edge_callback(edgeId, edgeName.toStdString(), boost::ref(proxy));
-      } catch (const bp::error_already_set&) {
-        PyErr_Print();
-      }
-    });
+    QObject::connect(
+        &widget, &hpp::plot::HppNativeGraphWidget::edgeContextMenuAboutToShow,
+        [edge_callback](std::size_t edgeId, QString edgeName, QMenu* menu) {
+          try {
+            MenuActionProxy proxy(menu);
+            edge_callback(edgeId, edgeName.toStdString(), boost::ref(proxy));
+          } catch (const bp::error_already_set&) {
+            PyErr_Print();
+          }
+        });
   }
 
   // Show and refresh
@@ -210,7 +209,8 @@ void showInteractiveGraph(bp::object py_graph,
 
 BOOST_PYTHON_MODULE(graph_viewer) {
   // Expose MenuActionProxy for adding menu actions from Python
-  bp::class_<MenuActionProxy, boost::noncopyable>("MenuActionProxy", bp::no_init)
+  bp::class_<MenuActionProxy, boost::noncopyable>("MenuActionProxy",
+                                                  bp::no_init)
       .def("addAction", &MenuActionProxy::addAction,
            (bp::arg("text"), bp::arg("callback")),
            "Add an action to the context menu.\n\n"
@@ -238,6 +238,8 @@ BOOST_PYTHON_MODULE(graph_viewer) {
           "Callbacks are invoked when user right-clicks on nodes/edges.\n\n"
           "Args:\n"
           "    graph: The Graph object from pyhpp.manipulation\n"
-          "    node_callback: Optional callback(node_id, node_name, menu_proxy) for node menus\n"
-          "    edge_callback: Optional callback(edge_id, edge_name, menu_proxy) for edge menus\n");
+          "    node_callback: Optional callback(node_id, node_name, "
+          "menu_proxy) for node menus\n"
+          "    edge_callback: Optional callback(edge_id, edge_name, "
+          "menu_proxy) for edge menus\n");
 }
