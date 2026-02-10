@@ -195,7 +195,7 @@ set_target_properties(
 install(TARGETS pyhpp_plot_graph_viewer
         DESTINATION "${PYTHON_SITELIB}/pyhpp_plot")
 
-file(WRITE "${CMAKE_BINARY_DIR}/pyhpp_plot/__init__.py"
-     "from .graph_viewer import show_graph\n")
-install(FILES "${CMAKE_BINARY_DIR}/pyhpp_plot/__init__.py"
+# Install Python modules
+install(FILES "${CMAKE_SOURCE_DIR}/src/pyhpp_plot/__init__.py"
+              "${CMAKE_SOURCE_DIR}/src/pyhpp_plot/interactive_viewer.py"
         DESTINATION "${PYTHON_SITELIB}/pyhpp_plot")

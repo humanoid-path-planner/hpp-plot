@@ -88,6 +88,31 @@ GraphPtr_t extractGraph(bp::object py_graph) {
       "'_get_native_graph()' method.");
 }
 
+/// Simple wrapper to allow Python to add menu actions
+class MenuActionProxy {
+public:
+  MenuActionProxy(QMenu* menu) : menu_(menu) {}
+
+  void addAction(const std::string& text, bp::object callback) {
+    QAction* action = menu_->addAction(QString::fromStdString(text));
+    // Store callback and connect
+    QObject::connect(action, &QAction::triggered, [callback]() {
+      try {
+        callback();
+      } catch (const bp::error_already_set&) {
+        PyErr_Print();
+      }
+    });
+  }
+
+  void addSeparator() {
+    menu_->addSeparator();
+  }
+
+private:
+  QMenu* menu_;
+};
+
 /// This function blocks until the window is closed
 void showGraphBlocking(bp::object py_graph) {
   GraphPtr_t graph = extractGraph(py_graph);
@@ -121,12 +146,98 @@ void showGraphBlocking(bp::object py_graph) {
   app.exec();
 }
 
+/// Interactive version with Python callbacks for context menus
+void showInteractiveGraph(bp::object py_graph,
+                         bp::object node_callback,
+                         bp::object edge_callback) {
+  GraphPtr_t graph = extractGraph(py_graph);
+
+  if (!graph) {
+    throw std::runtime_error("Graph is null");
+  }
+
+  int argc = 1;
+  static char app_name[] = "hpp-plot-interactive";
+  char* argv[] = {app_name, nullptr};
+
+  QApplication app(argc, argv);
+
+  // Create main window
+  QMainWindow window;
+  window.setWindowTitle(
+      QString::fromStdString("Constraint Graph: " + graph->name()));
+  window.resize(1200, 800);
+
+  // Create widget
+  hpp::plot::HppNativeGraphWidget widget(graph, &window);
+  widget.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  window.setCentralWidget(&widget);
+
+  // Connect Qt signals to Python callbacks
+  if (!node_callback.is_none()) {
+    QObject::connect(&widget, &hpp::plot::HppNativeGraphWidget::nodeContextMenuAboutToShow,
+                    [node_callback](std::size_t nodeId, QString nodeName, QMenu* menu) {
+      try {
+        MenuActionProxy proxy(menu);
+        node_callback(nodeId, nodeName.toStdString(), boost::ref(proxy));
+      } catch (const bp::error_already_set&) {
+        PyErr_Print();
+      }
+    });
+  }
+
+  if (!edge_callback.is_none()) {
+    QObject::connect(&widget, &hpp::plot::HppNativeGraphWidget::edgeContextMenuAboutToShow,
+                    [edge_callback](std::size_t edgeId, QString edgeName, QMenu* menu) {
+      try {
+        MenuActionProxy proxy(menu);
+        edge_callback(edgeId, edgeName.toStdString(), boost::ref(proxy));
+      } catch (const bp::error_already_set&) {
+        PyErr_Print();
+      }
+    });
+  }
+
+  // Show and refresh
+  window.show();
+  widget.updateGraph();
+
+  // Run event loop (blocking)
+  app.exec();
+}
+
 }  // namespace
 
 BOOST_PYTHON_MODULE(graph_viewer) {
+  // Expose MenuActionProxy for adding menu actions from Python
+  bp::class_<MenuActionProxy, boost::noncopyable>("MenuActionProxy", bp::no_init)
+      .def("addAction", &MenuActionProxy::addAction,
+           (bp::arg("text"), bp::arg("callback")),
+           "Add an action to the context menu.\n\n"
+           "Args:\n"
+           "    text: The text label for the menu action\n"
+           "    callback: Python callable to invoke when action is triggered\n")
+      .def("addSeparator", &MenuActionProxy::addSeparator,
+           "Add a separator line to the context menu\n");
+
   bp::def("show_graph", &showGraphBlocking, bp::arg("graph"),
           "Show constraint graph in a Qt viewer (blocking).\n\n"
           "This function blocks until the viewer window is closed.\n\n"
           "Args:\n"
           "    graph: The Graph object from pyhpp.manipulation\n");
+
+  // Alias for backwards compatibility
+  bp::def("show_graph_blocking", &showGraphBlocking, bp::arg("graph"),
+          "Alias for show_graph() for backwards compatibility.\n");
+
+  bp::def("show_interactive_graph", &showInteractiveGraph,
+          (bp::arg("graph"), bp::arg("node_callback") = bp::object(),
+           bp::arg("edge_callback") = bp::object()),
+          "Show constraint graph with interactive context menu callbacks.\n\n"
+          "This function blocks until the viewer window is closed.\n"
+          "Callbacks are invoked when user right-clicks on nodes/edges.\n\n"
+          "Args:\n"
+          "    graph: The Graph object from pyhpp.manipulation\n"
+          "    node_callback: Optional callback(node_id, node_name, menu_proxy) for node menus\n"
+          "    edge_callback: Optional callback(edge_id, edge_name, menu_proxy) for edge menus\n");
 }
