@@ -89,17 +89,23 @@ class HppNativeGraphWidget : public GraphWidget {
   void displayEdgeTargetConstraints(std::size_t id);
 
  Q_SIGNALS:
-  /// \brief Emitted before showing node context menu, allows external code to add actions
+  /// \brief Emitted before showing node context menu, allows external code to
+  /// add actions
   /// \param nodeId The ID of the node
   /// \param nodeName The name of the node (state)
-  /// \param menu Pointer to the context menu (can add actions before it's shown)
-  void nodeContextMenuAboutToShow(std::size_t nodeId, QString nodeName, QMenu* menu);
+  /// \param menu Pointer to the context menu (can add actions before it's
+  /// shown)
+  void nodeContextMenuAboutToShow(std::size_t nodeId, QString nodeName,
+                                  QMenu* menu);
 
-  /// \brief Emitted before showing edge context menu, allows external code to add actions
+  /// \brief Emitted before showing edge context menu, allows external code to
+  /// add actions
   /// \param edgeId The ID of the edge
   /// \param edgeName The name of the edge (transition)
-  /// \param menu Pointer to the context menu (can add actions before it's shown)
-  void edgeContextMenuAboutToShow(std::size_t edgeId, QString edgeName, QMenu* menu);
+  /// \param menu Pointer to the context menu (can add actions before it's
+  /// shown)
+  void edgeContextMenuAboutToShow(std::size_t edgeId, QString edgeName,
+                                  QMenu* menu);
 
  protected:
   /// \brief Fill scene from Graph object
