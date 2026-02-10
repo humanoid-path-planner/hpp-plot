@@ -25,7 +25,7 @@ class InteractiveGraphViewer:
         """
         self.graph = graph
         self.problem = problem
-        self.config_callback = config_callback or (lambda c, l: None)
+        self.config_callback = config_callback or (lambda config, label: None)
         self.current_config = None
 
     def show(self):
@@ -156,7 +156,7 @@ class InteractiveGraphViewer:
 
             for i in range(20):
                 q_random = shooter.shoot()
-                success, q_goal, error = self.graph.applyStateConstraints(
+                success, q_goal, _error = self.graph.applyStateConstraints(
                     state, q_random)
 
                 if success:
