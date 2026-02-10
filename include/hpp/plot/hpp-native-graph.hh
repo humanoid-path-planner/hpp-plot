@@ -32,6 +32,7 @@
 #ifndef HPP_PLOT_HPP_NATIVE_GRAPH_HH
 #define HPP_PLOT_HPP_NATIVE_GRAPH_HH
 
+#include <QMenu>
 #include <QPushButton>
 #include <hpp/manipulation/graph/graph.hh>
 #include <hpp/plot/graph-widget.hh>
@@ -86,6 +87,19 @@ class HppNativeGraphWidget : public GraphWidget {
 
   /// \brief Display edge target constraints in the constraint panel
   void displayEdgeTargetConstraints(std::size_t id);
+
+ Q_SIGNALS:
+  /// \brief Emitted before showing node context menu, allows external code to add actions
+  /// \param nodeId The ID of the node
+  /// \param nodeName The name of the node (state)
+  /// \param menu Pointer to the context menu (can add actions before it's shown)
+  void nodeContextMenuAboutToShow(std::size_t nodeId, QString nodeName, QMenu* menu);
+
+  /// \brief Emitted before showing edge context menu, allows external code to add actions
+  /// \param edgeId The ID of the edge
+  /// \param edgeName The name of the edge (transition)
+  /// \param menu Pointer to the context menu (can add actions before it's shown)
+  void edgeContextMenuAboutToShow(std::size_t edgeId, QString edgeName, QMenu* menu);
 
  protected:
   /// \brief Fill scene from Graph object
