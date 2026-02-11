@@ -39,6 +39,8 @@
 #include <QMainWindow>
 // clang-format on
 
+#include <memory>
+
 #include <hpp/manipulation/graph/graph.hh>
 #include <hpp/plot/hpp-native-graph.hh>
 
@@ -88,6 +90,20 @@ GraphPtr_t extractGraph(bp::object py_graph) {
       "'_get_native_graph()' method.");
 }
 
+/// Wrap a bp::object in a shared_ptr whose custom deleter acquires the GIL.
+/// This is required because bp::object's destructor calls Py_DECREF, which
+/// must only be called with the GIL held.  When the QMenu is destroyed after
+/// cm.exec() returns, we are inside Py_BEGIN_ALLOW_THREADS so the GIL is NOT
+/// held — the custom deleter ensures safe destruction.
+using SafePyObject = std::shared_ptr<bp::object>;
+inline SafePyObject makeSafePyObject(bp::object obj) {
+  return SafePyObject(new bp::object(std::move(obj)), [](bp::object* p) {
+    PyGILState_STATE gstate = PyGILState_Ensure();
+    delete p;
+    PyGILState_Release(gstate);
+  });
+}
+
 /// Simple wrapper to allow Python to add menu actions
 class MenuActionProxy {
  public:
@@ -95,13 +111,16 @@ class MenuActionProxy {
 
   void addAction(const std::string& text, bp::object callback) {
     QAction* action = menu_->addAction(QString::fromStdString(text));
-    // Store callback and connect
-    QObject::connect(action, &QAction::triggered, [callback]() {
+    // Wrap callback so its destructor safely acquires the GIL
+    auto safe_cb = makeSafePyObject(callback);
+    QObject::connect(action, &QAction::triggered, [safe_cb]() {
+      PyGILState_STATE gstate = PyGILState_Ensure();
       try {
-        callback();
+        (*safe_cb)();
       } catch (const bp::error_already_set&) {
         PyErr_Print();
       }
+      PyGILState_Release(gstate);
     });
   }
 
@@ -140,8 +159,10 @@ void showGraphBlocking(bp::object py_graph) {
   window.show();
   widget.updateGraph();
 
-  // Run event loop (blocking)
+  // Release GIL during Qt event loop so other Python threads can run
+  Py_BEGIN_ALLOW_THREADS
   app.exec();
+  Py_END_ALLOW_THREADS
 }
 
 /// Interactive version with Python callbacks for context menus
@@ -171,29 +192,41 @@ void showInteractiveGraph(bp::object py_graph, bp::object node_callback,
   window.setCentralWidget(&widget);
 
   // Connect Qt signals to Python callbacks
+  // Lambdas must acquire the GIL since Qt event loop runs with GIL released.
+  // bp::object captures use SafePyObject so destruction is GIL-safe.
   if (!node_callback.is_none()) {
+    auto safe_node_cb = makeSafePyObject(node_callback);
     QObject::connect(
-        &widget, &hpp::plot::HppNativeGraphWidget::nodeContextMenuAboutToShow,
-        [node_callback](std::size_t nodeId, QString nodeName, QMenu* menu) {
+        &widget,
+        &hpp::plot::HppNativeGraphWidget::nodeContextMenuAboutToShow,
+        [safe_node_cb](std::size_t nodeId, QString nodeName, QMenu* menu) {
+          PyGILState_STATE gstate = PyGILState_Ensure();
           try {
             MenuActionProxy proxy(menu);
-            node_callback(nodeId, nodeName.toStdString(), boost::ref(proxy));
+            (*safe_node_cb)(nodeId, nodeName.toStdString(),
+                            boost::ref(proxy));
           } catch (const bp::error_already_set&) {
             PyErr_Print();
           }
+          PyGILState_Release(gstate);
         });
   }
 
   if (!edge_callback.is_none()) {
+    auto safe_edge_cb = makeSafePyObject(edge_callback);
     QObject::connect(
-        &widget, &hpp::plot::HppNativeGraphWidget::edgeContextMenuAboutToShow,
-        [edge_callback](std::size_t edgeId, QString edgeName, QMenu* menu) {
+        &widget,
+        &hpp::plot::HppNativeGraphWidget::edgeContextMenuAboutToShow,
+        [safe_edge_cb](std::size_t edgeId, QString edgeName, QMenu* menu) {
+          PyGILState_STATE gstate = PyGILState_Ensure();
           try {
             MenuActionProxy proxy(menu);
-            edge_callback(edgeId, edgeName.toStdString(), boost::ref(proxy));
+            (*safe_edge_cb)(edgeId, edgeName.toStdString(),
+                            boost::ref(proxy));
           } catch (const bp::error_already_set&) {
             PyErr_Print();
           }
+          PyGILState_Release(gstate);
         });
   }
 
@@ -201,8 +234,11 @@ void showInteractiveGraph(bp::object py_graph, bp::object node_callback,
   window.show();
   widget.updateGraph();
 
-  // Run event loop (blocking)
+  // Release GIL during Qt event loop so other Python threads
+  // (e.g. ConfigQueueProcessor) can run freely
+  Py_BEGIN_ALLOW_THREADS
   app.exec();
+  Py_END_ALLOW_THREADS
 }
 
 }  // namespace
