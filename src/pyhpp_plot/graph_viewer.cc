@@ -39,10 +39,9 @@
 #include <QMainWindow>
 // clang-format on
 
-#include <memory>
-
 #include <hpp/manipulation/graph/graph.hh>
 #include <hpp/plot/hpp-native-graph.hh>
+#include <memory>
 
 // Workaround for Qt/Python keyword conflict (Python 3.13+)
 // Must undef Qt keywords before including Python headers
@@ -160,8 +159,7 @@ void showGraphBlocking(bp::object py_graph) {
   widget.updateGraph();
 
   // Release GIL during Qt event loop so other Python threads can run
-  Py_BEGIN_ALLOW_THREADS
-  app.exec();
+  Py_BEGIN_ALLOW_THREADS app.exec();
   Py_END_ALLOW_THREADS
 }
 
@@ -197,14 +195,12 @@ void showInteractiveGraph(bp::object py_graph, bp::object node_callback,
   if (!node_callback.is_none()) {
     auto safe_node_cb = makeSafePyObject(node_callback);
     QObject::connect(
-        &widget,
-        &hpp::plot::HppNativeGraphWidget::nodeContextMenuAboutToShow,
+        &widget, &hpp::plot::HppNativeGraphWidget::nodeContextMenuAboutToShow,
         [safe_node_cb](std::size_t nodeId, QString nodeName, QMenu* menu) {
           PyGILState_STATE gstate = PyGILState_Ensure();
           try {
             MenuActionProxy proxy(menu);
-            (*safe_node_cb)(nodeId, nodeName.toStdString(),
-                            boost::ref(proxy));
+            (*safe_node_cb)(nodeId, nodeName.toStdString(), boost::ref(proxy));
           } catch (const bp::error_already_set&) {
             PyErr_Print();
           }
@@ -215,14 +211,12 @@ void showInteractiveGraph(bp::object py_graph, bp::object node_callback,
   if (!edge_callback.is_none()) {
     auto safe_edge_cb = makeSafePyObject(edge_callback);
     QObject::connect(
-        &widget,
-        &hpp::plot::HppNativeGraphWidget::edgeContextMenuAboutToShow,
+        &widget, &hpp::plot::HppNativeGraphWidget::edgeContextMenuAboutToShow,
         [safe_edge_cb](std::size_t edgeId, QString edgeName, QMenu* menu) {
           PyGILState_STATE gstate = PyGILState_Ensure();
           try {
             MenuActionProxy proxy(menu);
-            (*safe_edge_cb)(edgeId, edgeName.toStdString(),
-                            boost::ref(proxy));
+            (*safe_edge_cb)(edgeId, edgeName.toStdString(), boost::ref(proxy));
           } catch (const bp::error_already_set&) {
             PyErr_Print();
           }
@@ -236,8 +230,7 @@ void showInteractiveGraph(bp::object py_graph, bp::object node_callback,
 
   // Release GIL during Qt event loop so other Python threads
   // (e.g. ConfigQueueProcessor) can run freely
-  Py_BEGIN_ALLOW_THREADS
-  app.exec();
+  Py_BEGIN_ALLOW_THREADS app.exec();
   Py_END_ALLOW_THREADS
 }
 
