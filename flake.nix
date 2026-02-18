@@ -25,7 +25,10 @@
         {
           packages = {
             default = self'.packages.hpp-plot;
-            hpp-plot = pkgs.python3Packages.hpp-plot.overrideAttrs {
+            hpp-plot = pkgs.python3Packages.hpp-plot.overrideAttrs (super: {
+              buildInputs = super.buildInputs ++ [
+                pkgs.libsForQt5.qtwayland
+              ];
               src = lib.fileset.toSource {
                 root = ./.;
                 fileset = lib.fileset.unions [
@@ -39,7 +42,7 @@
                   ./src
                 ];
               };
-            };
+            });
           };
         };
     };

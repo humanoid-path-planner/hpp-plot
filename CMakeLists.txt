@@ -192,6 +192,43 @@ set_target_properties(
              OUTPUT_NAME "graph_viewer"
              LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/pyhpp_plot")
 
+# pyhpp_plot_graph_viewer is a python module that spawn Qt windows. for this, at
+# runtime, it need a QT_PLUGIN_PATH env var with a path where the shared lib for
+# the current Qt "platform" are. Here we find a QT_PLUGIN_PATH that would work
+# at config time, so that at runtime we can append that as a default fallback,
+# if a end user has Qt installed in a non-FHS standard place and did not
+# manually tune their $QT_PLUGIN_PATH env var for it
+
+set(QT_PLUGIN_PATH_CMAKE)
+
+# First, we might need to manually discover platforms plugins which are not
+# installed in the same prefix as Qt5Gui. eg. Wayland.
+find_package(
+  Qt5 CONFIG
+  COMPONENTS WaylandClient
+  QUIET)
+if(Qt5WaylandClient_FOUND)
+  cmake_path(GET Qt5WaylandClient_DIR PARENT_PATH _p)
+  file(GLOB pluginTargets "${_p}/Qt5Gui/Qt5Gui_*.cmake")
+  if(pluginTargets)
+    foreach(pluginTarget ${pluginTargets})
+      include(${pluginTarget})
+    endforeach()
+  endif()
+endif()
+
+foreach(p IN LISTS Qt5Gui_PLUGINS)
+  get_target_property(_l ${p} IMPORTED_LOCATION_RELEASE)
+  cmake_path(GET _l PARENT_PATH _pp)
+  cmake_path(GET _pp PARENT_PATH _ppp)
+  if(NOT _ppp IN_LIST QT_PLUGIN_PATH_CMAKE)
+    set(QT_PLUGIN_PATH_CMAKE ${QT_PLUGIN_PATH_CMAKE} ${_ppp})
+  endif()
+endforeach()
+
+add_compile_definitions(
+  "QT_PLUGIN_PATH_CMAKE=\"$<JOIN:${QT_PLUGIN_PATH_CMAKE},:>\"")
+
 install(TARGETS pyhpp_plot_graph_viewer
         DESTINATION "${PYTHON_SITELIB}/pyhpp_plot")
 
