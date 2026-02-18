@@ -237,6 +237,17 @@ void showInteractiveGraph(bp::object py_graph, bp::object node_callback,
 }  // namespace
 
 BOOST_PYTHON_MODULE(graph_viewer) {
+  // Append what was found at build time to QT_PLUGIN_PATH
+  // so users dont need to set it, even if their platform plugin
+  // is in non-standard place. They can still define the env
+  // var to override this behavior.
+  auto plugin_paths = qgetenv("QT_PLUGIN_PATH");
+  if (!plugin_paths.isEmpty()) {
+    plugin_paths.append(":");
+  }
+  plugin_paths.append(QT_PLUGIN_PATH_CMAKE);
+  qputenv("QT_PLUGIN_PATH", plugin_paths);
+
   // Expose MenuActionProxy for adding menu actions from Python
   bp::class_<MenuActionProxy, boost::noncopyable>("MenuActionProxy",
                                                   bp::no_init)
