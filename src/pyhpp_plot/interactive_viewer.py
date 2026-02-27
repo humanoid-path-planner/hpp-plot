@@ -99,21 +99,12 @@ class InteractiveGraphViewer:
                     self.config_callback(
                         q_proj, f"Random config in state: {state_name}"
                     )
-                    print(f"Generated config for state '{state_name}'")
                     return
 
                 if error < min_error:
                     min_error = error
-
-            print(
-                f"Failed to generate config for state '{state_name}' "
-                f"after 20 attempts (min error: {min_error:.6f})"
-            )
-        except Exception as e:
-            print(f"Error generating random config: {e}")
-            import traceback
-
-            traceback.print_exc()
+        except Exception:
+            pass
 
     def _generate_from_current_config(self, state_name):
         """Project current config to state.
@@ -123,11 +114,10 @@ class InteractiveGraphViewer:
         """
         try:
             if self.current_config is None:
-                print("No current config available. Generate a config first.")
                 return
 
             state = self.graph.getState(state_name)
-            success, q_proj, error = self.graph.applyStateConstraints(
+            success, q_proj, _error = self.graph.applyStateConstraints(
                 state, self.current_config
             )
 
@@ -136,17 +126,8 @@ class InteractiveGraphViewer:
                 self.config_callback(
                     q_proj, f"Current config projected to state: {state_name}"
                 )
-                print(f"Projected current config to state '{state_name}'")
-            else:
-                print(
-                    f"Failed to project current config to state "
-                    f"'{state_name}' (error: {error:.6f})"
-                )
-        except Exception as e:
-            print(f"Error projecting current config: {e}")
-            import traceback
-
-            traceback.print_exc()
+        except Exception:
+            pass
 
     def _set_target_state(self, state_name):
         """Set state as goal for planning.
@@ -166,15 +147,9 @@ class InteractiveGraphViewer:
 
                 if success:
                     self.problem.addGoalConfig(q_goal)
-                    print(f"Added goal config in state '{state_name}'")
                     return
-
-            print(f"Failed to generate goal config for state '{state_name}'")
-        except Exception as e:
-            print(f"Error setting target state: {e}")
-            import traceback
-
-            traceback.print_exc()
+        except Exception:
+            pass
 
     def _extend_current_to_current(self, edge_name):
         """Generate target config along edge from current config.
@@ -185,25 +160,18 @@ class InteractiveGraphViewer:
         """
         try:
             if self.current_config is None:
-                print("No current config available. Generate a config first.")
                 return
 
             edge = self.graph.getTransition(edge_name)
-            success, q_out, error = self.graph.generateTargetConfig(
+            success, q_out, _error = self.graph.generateTargetConfig(
                 edge, self.current_config, self.current_config
             )
 
             if success:
                 self.current_config = q_out
                 self.config_callback(q_out, f"Extended along edge: {edge_name}")
-                print(f"Extended current config along edge '{edge_name}'")
-            else:
-                print(f"Failed to extend along edge '{edge_name}' (error: {error:.6f})")
-        except Exception as e:
-            print(f"Error extending current config: {e}")
-            import traceback
-
-            traceback.print_exc()
+        except Exception:
+            pass
 
     def _extend_current_to_random(self, edge_name):
         """Generate target config along edge to random config.
@@ -214,14 +182,13 @@ class InteractiveGraphViewer:
         """
         try:
             if self.current_config is None:
-                print("No current config available. Generate a config first.")
                 return
 
             edge = self.graph.getTransition(edge_name)
             shooter = self.problem.configurationShooter()
             q_random = shooter.shoot()
 
-            success, q_out, error = self.graph.generateTargetConfig(
+            success, q_out, _error = self.graph.generateTargetConfig(
                 edge, self.current_config, q_random
             )
 
@@ -230,17 +197,8 @@ class InteractiveGraphViewer:
                 self.config_callback(
                     q_out, f"Extended along edge to random: {edge_name}"
                 )
-                print(f"Extended to random config along edge '{edge_name}'")
-            else:
-                print(
-                    f"Failed to extend to random along edge '{edge_name}' "
-                    f"(error: {error:.6f})"
-                )
-        except Exception as e:
-            print(f"Error extending to random config: {e}")
-            import traceback
-
-            traceback.print_exc()
+        except Exception:
+            pass
 
 
 class GraphViewerThread(threading.Thread):
