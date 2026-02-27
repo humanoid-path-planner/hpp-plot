@@ -58,6 +58,30 @@ namespace {
 
 using GraphPtr_t = hpp::manipulation::graph::GraphPtr_t;
 
+// Custom message handler to suppress Qt debug messages
+void quietMessageHandler(QtMsgType type, const QMessageLogContext& context,
+                          const QString& msg) {
+  if (type == QtDebugMsg) {
+    return;  // Suppress debug messages
+  }
+  // For other message types, use default behavior
+  QByteArray localMsg = msg.toLocal8Bit();
+  switch (type) {
+    case QtInfoMsg:
+      fprintf(stderr, "%s\n", localMsg.constData());
+      break;
+    case QtWarningMsg:
+      fprintf(stderr, "Warning: %s\n", localMsg.constData());
+      break;
+    case QtCriticalMsg:
+      fprintf(stderr, "Critical: %s\n", localMsg.constData());
+      break;
+    case QtFatalMsg:
+      fprintf(stderr, "Fatal: %s\n", localMsg.constData());
+      abort();
+  }
+}
+
 static const char* GRAPH_CAPSULE_NAME = "hpp.manipulation.graph.GraphPtr";
 
 /// Extract GraphPtr_t from a Python object
@@ -137,6 +161,9 @@ void showGraphBlocking(bp::object py_graph) {
     throw std::runtime_error("Graph is null");
   }
 
+  // Suppress Qt debug output
+  qInstallMessageHandler(quietMessageHandler);
+
   int argc = 1;
   static char app_name[] = "hpp-plot-native";
   char* argv[] = {app_name, nullptr};
@@ -171,6 +198,9 @@ void showInteractiveGraph(bp::object py_graph, bp::object node_callback,
   if (!graph) {
     throw std::runtime_error("Graph is null");
   }
+
+  // Suppress Qt debug output
+  qInstallMessageHandler(quietMessageHandler);
 
   int argc = 1;
   static char app_name[] = "hpp-plot-interactive";
