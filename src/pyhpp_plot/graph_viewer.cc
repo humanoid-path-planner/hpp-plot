@@ -60,7 +60,7 @@ using GraphPtr_t = hpp::manipulation::graph::GraphPtr_t;
 
 // Custom message handler to suppress Qt debug messages
 void quietMessageHandler(QtMsgType type, const QMessageLogContext& context,
-                          const QString& msg) {
+                         const QString& msg) {
   if (type == QtDebugMsg) {
     return;  // Suppress debug messages
   }
