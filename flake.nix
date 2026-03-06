@@ -3,6 +3,7 @@
 
   inputs = {
     gepetto.url = "github:gepetto/nix";
+    gazebros2nix.follows = "gepetto/gazebros2nix";
     flake-parts.follows = "gepetto/flake-parts";
     nixpkgs.follows = "gepetto/nixpkgs";
     nix-ros-overlay.follows = "gepetto/nix-ros-overlay";
@@ -12,22 +13,14 @@
 
   outputs =
     inputs:
-    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = import inputs.systems;
-      imports = [ inputs.gepetto.flakeModule ];
-      perSystem =
-        {
-          lib,
-          pkgs,
-          self',
-          ...
-        }:
-        {
-          packages = {
-            default = self'.packages.hpp-plot;
-            hpp-plot = pkgs.python3Packages.hpp-plot.overrideAttrs (super: {
-              buildInputs =
-                super.buildInputs ++ lib.optional (pkgs.stdenv.hostPlatform.isLinux) pkgs.libsForQt5.qtwayland;
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } (
+      { lib, ... }:
+      {
+        systems = import inputs.systems;
+        imports = [
+          inputs.gepetto.flakeModule
+          {
+            gazebros2nix.overrides.hpp-plot = _final: {
               src = lib.fileset.toSource {
                 root = ./.;
                 fileset = lib.fileset.unions [
@@ -41,8 +34,9 @@
                   ./src
                 ];
               };
-            });
-          };
-        };
-    };
+            };
+          }
+        ];
+      }
+    );
 }
