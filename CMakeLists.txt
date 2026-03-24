@@ -144,13 +144,12 @@ add_library(
   ${${PROJECT_NAME}_HEADERS_MOC} ${${PROJECT_NAME}_FORMS_HEADERS}
   ${${PROJECT_NAME}_RESOURCES_RCC})
 
-  target_link_libraries(
-    ${PROJECT_NAME} PUBLIC ${QT_LIBRARIES} hpp-manipulation::hpp-manipulation
-                           hpp-manipulation::hpp-manipulation qgv::qgvcore)
+target_link_libraries(
+  ${PROJECT_NAME} PUBLIC ${QT_LIBRARIES} hpp-manipulation::hpp-manipulation
+                         hpp-manipulation::hpp-manipulation qgv::qgvcore)
 if(USE_CORBA)
-  target_link_libraries(
-    ${PROJECT_NAME}
-    PUBLIC hpp-manipulation-corba::hpp-manipulation-corba)
+  target_link_libraries(${PROJECT_NAME}
+                        PUBLIC hpp-manipulation-corba::hpp-manipulation-corba)
 endif()
 
 install(
