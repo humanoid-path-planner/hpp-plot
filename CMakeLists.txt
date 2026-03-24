@@ -67,10 +67,10 @@ list(APPEND PKG_CONFIG_ADDITIONAL_VARIABLES qtversion cmake_plugin)
 compute_project_args(PROJECT_ARGS LANGUAGES CXX)
 project(${PROJECT_NAME} ${PROJECT_ARGS})
 
-option(USE_CORBA
-       "Enable functionnalities requiring the corba servers of HPP" OFF)
+option(USE_CORBA "Enable functionnalities requiring the corba servers of HPP"
+       OFF)
 
-if (USE_CORBA)
+if(USE_CORBA)
   add_project_dependency("gepetto-viewer")
   add_project_dependency("gepetto-viewer-corba")
 
@@ -122,7 +122,7 @@ foreach(
 endforeach()
 set(PKG_CONFIG_EXTRA "qtversion=${Qt5Core_VERSION}")
 
-if (USE_CORBA)
+if(USE_CORBA)
   add_project_dependency("hpp-manipulation-corba" REQUIRED)
 endif()
 add_project_dependency("hpp-manipulation" REQUIRED)
@@ -133,13 +133,11 @@ set(PYTHON_COMPONENTS Interpreter Development NumPy)
 findpython()
 search_for_boost_python()
 
-set(${PROJECT_NAME}_HEADERS
-    include/hpp/plot/graph-widget.hh
-    include/hpp/plot/hpp-native-graph.hh)
-if (USE_CORBA)
+set(${PROJECT_NAME}_HEADERS include/hpp/plot/graph-widget.hh
+                            include/hpp/plot/hpp-native-graph.hh)
+if(USE_CORBA)
   set(${PROJECT_NAME}_HEADERS ${${PROJECT_NAME}_HEADERS}
-      include/hpp/plot/hpp-manipulation-graph.hh
-  )
+                              include/hpp/plot/hpp-manipulation-graph.hh)
 endif()
 set(${PROJECT_NAME}_HEADERS_NOMOC)
 
@@ -155,7 +153,7 @@ add_definitions(${QT_DEFINITIONS})
 set(${PROJECT_NAME}_SOURCES src/graph-widget.cc src/hpp-native-graph.cc)
 if(USE_CORBA)
   set(${PROJECT_NAME}_SOURCES ${${PROJECT_NAME}_SOURCES}
-      src/hpp-manipulation-graph.cc)
+                              src/hpp-manipulation-graph.cc)
 endif()
 
 add_library(
@@ -164,16 +162,15 @@ add_library(
   ${${PROJECT_NAME}_HEADERS_MOC} ${${PROJECT_NAME}_FORMS_HEADERS}
   ${${PROJECT_NAME}_RESOURCES_RCC})
 
-if (USE_CORBA)
+if(USE_CORBA)
   target_link_libraries(
     ${PROJECT_NAME}
     PUBLIC ${QT_LIBRARIES} hpp-manipulation-corba::hpp-manipulation-corba
            hpp-manipulation::hpp-manipulation qgv::qgvcore)
 else()
   target_link_libraries(
-    ${PROJECT_NAME}
-    PUBLIC ${QT_LIBRARIES} hpp-manipulation::hpp-manipulation
-           hpp-manipulation::hpp-manipulation qgv::qgvcore)
+    ${PROJECT_NAME} PUBLIC ${QT_LIBRARIES} hpp-manipulation::hpp-manipulation
+                           hpp-manipulation::hpp-manipulation qgv::qgvcore)
 endif()
 
 install(
@@ -181,7 +178,7 @@ install(
   EXPORT ${TARGETS_EXPORT_NAME}
   DESTINATION lib)
 
-if (USE_CORBA)
+if(USE_CORBA)
   add_subdirectory(bin)
   add_subdirectory(plugins)
 endif()
