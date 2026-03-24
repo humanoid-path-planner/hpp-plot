@@ -21,9 +21,7 @@
 
   <build_depend>doxygen</build_depend>
 
-  <depend>gepetto-viewer</depend>
-  <depend>gepetto-viewer-corba</depend>
-  <depend>hpp-manipulation-corba</depend>
+  <depend>hpp-manipulation</depend>
   <!-- Required by CMake, but not available in rosdep -->
   <!-- <depend>qgv</depend> -->
 
