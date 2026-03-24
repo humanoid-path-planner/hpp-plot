@@ -74,24 +74,6 @@ if(USE_CORBA)
   add_project_dependency("gepetto-viewer")
   add_project_dependency("gepetto-viewer-corba")
 
-  if(gepetto-viewer-corba_FOUND)
-    # Get desired Qt version
-    string(REPLACE "." ";" DESIRED_QT_VERSION_LIST
-                   ${GEPETTO_VIEWER_CORBA_QTVERSION})
-    list(GET DESIRED_QT_VERSION_LIST 0 DESIRED_QT_VERSION_MAJOR)
-
-    if(${DESIRED_QT_VERSION_MAJOR} EQUAL 4)
-      set(USE_QT4 True)
-    elseif(${DESIRED_QT_VERSION_MAJOR} EQUAL 5)
-      set(USE_QT4 False)
-    else()
-      message(FATAL_ERROR "This package is only compatible with Qt 4 and Qt 5")
-    endif()
-  else(gepetto-viewer-corba_FOUND)
-    set(USE_QT4
-        FALSE
-        CACHE BOOL "Use Qt4 instead of Qt5")
-  endif(gepetto-viewer-corba_FOUND)
 endif()
 
 message(STATUS "Looking for Qt ${DESIRED_QT_VERSION_MAJOR}.")
@@ -162,15 +144,13 @@ add_library(
   ${${PROJECT_NAME}_HEADERS_MOC} ${${PROJECT_NAME}_FORMS_HEADERS}
   ${${PROJECT_NAME}_RESOURCES_RCC})
 
-if(USE_CORBA)
-  target_link_libraries(
-    ${PROJECT_NAME}
-    PUBLIC ${QT_LIBRARIES} hpp-manipulation-corba::hpp-manipulation-corba
-           hpp-manipulation::hpp-manipulation qgv::qgvcore)
-else()
   target_link_libraries(
     ${PROJECT_NAME} PUBLIC ${QT_LIBRARIES} hpp-manipulation::hpp-manipulation
                            hpp-manipulation::hpp-manipulation qgv::qgvcore)
+if(USE_CORBA)
+  target_link_libraries(
+    ${PROJECT_NAME}
+    PUBLIC hpp-manipulation-corba::hpp-manipulation-corba)
 endif()
 
 install(
