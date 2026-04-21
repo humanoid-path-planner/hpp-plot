@@ -7,8 +7,8 @@ from .graph_viewer import (
 from .interactive_viewer import (
     GraphViewerThread,
     InteractiveGraphViewer,
-    show_interactive_graph_threaded,
 )
+from .websocket_bridge import GraphWebSocketBridge
 
 __all__ = [
     "GraphViewerThread",
@@ -17,5 +17,5 @@ __all__ = [
     "show_graph",
     "show_graph_blocking",
     "show_interactive_graph",
-    "show_interactive_graph_threaded",
+    "GraphWebSocketBridge",
 ]
