@@ -5,152 +5,10 @@ from __future__ import annotations
 import asyncio
 import json
 import threading
-from collections.abc import Iterable
 from typing import Any, Callable
+from .utils import _jsonable, _serialize_graph
 
 from websockets.asyncio.server import ServerConnection, serve
-
-
-_U64_MOD = 1 << 64
-_I64_MAX = (1 << 63) - 1
-
-
-def _jsonable(value: Any) -> Any:
-    if value is None or isinstance(value, (str, int, float, bool)):
-        return value
-
-    if isinstance(value, dict):
-        return {str(key): _jsonable(item) for key, item in value.items()}
-
-    if isinstance(value, (list, tuple, set)):
-        return [_jsonable(item) for item in value]
-
-    to_list = getattr(value, "tolist", None)
-    if callable(to_list):
-        return _jsonable(to_list())
-
-    return str(value)
-
-
-def _call_optional(obj: Any, names: Iterable[str], default: Any = None) -> Any:
-    if isinstance(names, str):
-        names = (names,)
-
-    for name in names:
-        candidate = getattr(obj, name, None)
-        if candidate is None:
-            continue
-
-        if not callable(candidate):
-            return candidate
-
-        try:
-            return candidate()
-        except TypeError:
-            continue
-        except Exception:
-            continue
-
-    return default
-
-
-def _normalize_weight(raw_weight: Any) -> int:
-    """Convert C++ weight to signed 64-bit when Python exposes it as unsigned."""
-    weight = int(raw_weight)
-    if weight > _I64_MAX:
-        weight -= _U64_MOD
-    return weight
-
-
-def _serialize_graph(graph: Any) -> dict[str, Any]:
-    """Serialize graph structure: states and edges with metadata."""
-    if graph is None:
-        return {}
-
-    def _component_id(component: Any) -> str | None:
-        try:
-            return str(component.id())
-        except Exception:
-            return None
-
-    def _get_nc_names(nc_list: Any) -> list[str]:
-        result = []
-        for nc in nc_list:
-            try:
-                result.append(nc.function().name())
-            except Exception:
-                result.append("Unknown")
-        return result
-
-    def _serialize_state(state: Any) -> dict[str, Any] | None:
-        try:
-            state_id = str(state.id())
-            state_name = state.name()
-        except Exception:
-            return None
-
-        try:
-            constraints = graph.displayStateConstraints(state)
-        except Exception:
-            constraints = None
-
-        try:
-            numerical_constraints = _get_nc_names(
-                graph.getNumericalConstraintsForState(state)
-            )
-        except Exception:
-            numerical_constraints = None
-
-        return {
-            "id": state_id,
-            "name": state_name,
-            "constraints": constraints,
-            "numericalConstraints": numerical_constraints,
-        }
-
-    def _serialize_edge(edge: Any) -> dict[str, Any] | None:
-        try:
-            source, target = graph.getNodesConnectedByTransition(edge)
-        except Exception:
-            return None
-
-        try:
-            weight = _normalize_weight(graph.getWeight(edge))
-        except Exception:
-            weight = None
-
-        try:
-            constraints = graph.displayEdgeConstraints(edge)
-        except Exception:
-            constraints = None
-
-        try:
-            numerical_constraints = _get_nc_names(
-                graph.getNumericalConstraintsForEdge(edge)
-            )
-        except Exception:
-            numerical_constraints = None
-
-        return {
-            "id": _component_id(edge),
-            "name": _call_optional(edge, ("name",), default=None),
-            "source": str(source),
-            "target": str(target),
-            "nbWaypoints": _call_optional(edge, ("nbWaypoints",), default=0),
-            "weight": weight,
-            "constraints": constraints,
-            "numericalConstraints": numerical_constraints,
-        }
-
-    states = graph.getStates() or []
-    transitions = graph.getTransitions() or []
-
-    return {
-        "name": _call_optional(graph, ("name",), default=""),
-        "id": _call_optional(graph, ("id",), default=None),
-        "states": [s for state in states if (s := _serialize_state(state))],
-        "edges": [e for edge in transitions if (e := _serialize_edge(edge))],
-    }
 
 
 class GraphWebSocketBridge:
@@ -225,21 +83,11 @@ class GraphWebSocketBridge:
     def send_status(self, message: str) -> None:
         self.broadcast({"type": "status", "message": message})
 
-    def send_config(self, config: Any, label: str) -> None:
-        self.broadcast(
-            {
-                "type": "config_generated",
-                "label": label,
-                "config": _jsonable(config),
-            }
-        )
-
-    def send_viewer_snapshot(self, graph: Any, problem: Any) -> None:
+    def send_viewer_snapshot(self, graph: Any) -> None:
         self.broadcast(
             {
                 "type": "viewer_snapshot",
                 "graph": _serialize_graph(graph),
-                "problem": (problem),
             }
         )
 
@@ -250,9 +98,7 @@ class GraphWebSocketBridge:
             self._loop.run_until_complete(self._serve())
         except OSError as exc:
             self._ready.set()
-            print(
-                f"WebSocket bridge could not start on {self.host}:{self.port}: {exc}"
-            )
+            print(f"WebSocket bridge could not start on {self.host}:{self.port}: {exc}")
         finally:
             self._loop.close()
             self._stopped.set()
@@ -269,7 +115,6 @@ class GraphWebSocketBridge:
         await websocket.send(
             json.dumps({"type": "hello", "source": "python", "url": self.url})
         )
-
         if self.snapshot_provider is not None:
             try:
                 snapshot = self.snapshot_provider()
@@ -284,7 +129,10 @@ class GraphWebSocketBridge:
             except json.JSONDecodeError:
                 message = {"type": "text", "payload": raw_message}
 
-            if (message.get("type") == "request_snapshot" and self.snapshot_provider is not None):
+            if (
+                message.get("type") == "request_snapshot"
+                and self.snapshot_provider is not None
+            ):
                 try:
                     snapshot = self.snapshot_provider()
                 except Exception:
@@ -305,7 +153,10 @@ class GraphWebSocketBridge:
 
         message = json.dumps(_jsonable(payload))
         await asyncio.gather(
-            *(connection.send(message) for connection in list(self._server.connections)),
+            *(
+                connection.send(message)
+                for connection in list(self._server.connections)
+            ),
             return_exceptions=True,
         )
 

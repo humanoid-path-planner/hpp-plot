@@ -3,16 +3,22 @@ import ContextMenu, { initialMenuState } from "./components/ContextMenu";
 import GraphCanvas from "./components/GraphCanvas";
 import Toolbar from "./components/Toolbar";
 import { elementsFromGraphSnapshot } from "./graph/normalizeSnapshot";
-import useGraphWebSocket from "./hooks/useGraphWebSocket";
-import useCytoscapeGraph from "./hooks/useCytoscapeGraph";
+import webSocket from "./hooks/webSocket";
+import cytoscapeGraph from "./graph/cytoscapeGraph";
 import { downloadGraphPng } from "./utils/downloadGraph";
 
 export default function App() {
   const [menu, setMenu] = useState(initialMenuState);
   const [selectedElementInfo, setSelectedElementInfo] = useState(null);
-  const [viewerSnapshot, setViewerSnapshot] = useState({ graph: null, problem: null });
+  const [viewerSnapshot, setViewerSnapshot] = useState({ graph: null });
   const viewerSectionRef = useRef(null);
-  const { status, lastMessage, sendMessage } = useGraphWebSocket();
+  const { status, lastMessage, sendMessage } = webSocket();
+  const cyElements = useMemo(
+    () => elementsFromGraphSnapshot(viewerSnapshot.graph),
+    [viewerSnapshot.graph],
+  );
+
+
 
   useEffect(() => {
     if (!lastMessage) return;
@@ -20,36 +26,33 @@ export default function App() {
     if (lastMessage.type === "viewer_snapshot") {
       setViewerSnapshot({
         graph: lastMessage.graph ?? null,
-        problem: lastMessage.problem ?? null,
       });
     }
   }, [lastMessage]);
 
-  const cyElements = useMemo(
-    () => elementsFromGraphSnapshot(viewerSnapshot.graph),
-    [viewerSnapshot.graph],
-  );
+
 
   const hideMenu = useCallback(() => {
     setMenu((prev) => ({ ...prev, visible: false, elementId: null, elementKind: null }));
   }, []);
 
-  const { containerRef, cyRef, runLayout, fitGraph, showWayPoints } = useCytoscapeGraph({
+
+
+  const refreshGraph = useCallback(() => {
+    sendMessage({ type: "request_snapshot" });
+  }, [sendMessage]);
+
+  const { containerRef, cyRef, runLayout, fitGraph, showWayPoints } = cytoscapeGraph({
     elements: cyElements,
     setMenu,
     hideMenu,
     setSelectedElementInfo,
   });
 
-
-
   const downloadGraph = useCallback(() => {
     downloadGraphPng(cyRef.current);
   }, [cyRef]);
 
-  const refreshGraph = useCallback(() => {
-    sendMessage({ type: "request_snapshot" });
-  }, [sendMessage]);
 
 
   const onMenuAction = (action) => {

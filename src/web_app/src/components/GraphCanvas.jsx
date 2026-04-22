@@ -74,7 +74,7 @@ const GraphCanvas = forwardRef(function GraphCanvas({ toolbar, info, graphSnapsh
             {(constraints_fuctions.length > 0 || constraints.length > 0) && (
               <section className="graph-info-section">
                 <h4 className="graph-info-section-title">Constraints</h4>
-                
+
                 {constraints_fuctions.length > 0 && (
                   <div className="graph-info-constraints">
                     <h5>Applied Constraints:</h5>
@@ -85,7 +85,7 @@ const GraphCanvas = forwardRef(function GraphCanvas({ toolbar, info, graphSnapsh
                     </ul>
                   </div>
                 )}
-                
+
                 {constraints.length > 0 && (
                   <div className="graph-info-constraints">
                     <h5>Details:</h5>

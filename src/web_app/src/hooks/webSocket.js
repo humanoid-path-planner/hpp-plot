@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {useCallback, useEffect, useRef, useState} from 'react';
 
-const DEFAULT_WS_URL = import.meta.env.VITE_WS_URL || "ws://127.0.0.1:8765";
+const DEFAULT_WS_URL = import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:8765';
 
 export default function useGraphWebSocket(url = DEFAULT_WS_URL) {
   const socketRef = useRef(null);
   const reconnectTimerRef = useRef(null);
-  const [status, setStatus] = useState("connecting");
+  const [status, setStatus] = useState('connecting');
   const [lastMessage, setLastMessage] = useState(null);
 
   const sendMessage = useCallback((message) => {
@@ -36,30 +36,27 @@ export default function useGraphWebSocket(url = DEFAULT_WS_URL) {
     const connect = () => {
       const socket = new WebSocket(url);
       socketRef.current = socket;
-      setStatus("connecting");
+      setStatus('connecting');
 
       socket.onopen = () => {
         if (!cancelled) {
-          setStatus("connected");
+          setStatus('connected');
         }
-        socket.send(JSON.stringify({ type: "request_snapshot" }));
+        socket.send(JSON.stringify({type: 'request_snapshot'}));
       };
 
       socket.onmessage = (event) => {
         try {
-        
-            console.debug("Received WebSocket message:", event.data);
-            const payload = JSON.parse(event.data);
-            setLastMessage(payload);
+          const payload = JSON.parse(event.data);
+          setLastMessage(payload);
         } catch (_error) {
-            console.error("Error parsing WebSocket message:", event.data);
-            setLastMessage({ type: "raw", payload: event.data });
+          setLastMessage({type: 'raw', payload: event.data});
         }
       };
 
       socket.onerror = () => {
         if (!cancelled) {
-          setStatus("error");
+          setStatus('error');
         }
       };
 
@@ -68,7 +65,7 @@ export default function useGraphWebSocket(url = DEFAULT_WS_URL) {
           return;
         }
 
-        setStatus("disconnected");
+        setStatus('disconnected');
         reconnectTimerRef.current = window.setTimeout(connect, 1500);
       };
     };

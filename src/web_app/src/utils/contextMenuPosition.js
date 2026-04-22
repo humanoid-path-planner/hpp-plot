@@ -15,5 +15,5 @@ export function computeMenuPosition(containerRect, renderedPosition) {
     y = Math.max(MARGIN, window.innerHeight - MENU_HEIGHT - MARGIN);
   }
 
-  return { x, y };
+  return {x, y};
 }
