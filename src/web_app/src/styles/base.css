@@ -1,0 +1,54 @@
+:root {
+  --bg: #ffffff;
+  --panel: #fffef8;
+  --link: #1f2a30;
+  --accent: #228be6;
+  --accent-soft: #cde9e5;
+  --edge: #000000;
+  --state: #f2b84b;
+  --waypoint: #e0665b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg);
+  color: var(--link);
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+main {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 100dvh;
+  height: 100%;
+  overflow: hidden;
+}
+
+button {
+  border: 1px solid var(--accent);
+  background: var(--panel);
+  color: var(--accent);
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+button:hover {
+  background: var(--accent-soft);
+}

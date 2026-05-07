@@ -1,0 +1,29 @@
+.legend {
+  position: absolute;
+  bottom: 0.5rem;
+  margin-left: 0.5rem;
+  z-index: 100;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.chip {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.28rem 0.62rem;
+  font-size: 0.85rem;
+  border: 1px solid #00000012;
+}
+
+.state {
+  background: color-mix(in srgb, var(--state) 35%, white);
+}
+
+.waypoint {
+  background: color-mix(in srgb, var(--waypoint) 35%, white);
+}
+
+.edge {
+  background: color-mix(in srgb, var(--edge) 25%, white);
+}

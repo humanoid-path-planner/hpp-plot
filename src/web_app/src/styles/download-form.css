@@ -1,0 +1,90 @@
+#downloadForm {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  width: clamp(19rem, 34vw, 34rem);
+  height: auto;
+  min-height: 100px;
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, #d9e3ea);
+  background: linear-gradient(170deg, #ffffff 0%, #f7fbff 100%);
+  box-shadow: 0 20px 44px rgba(9, 41, 73, 0.24);
+  backdrop-filter: blur(4px);
+}
+
+#downloadForm label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #395168;
+}
+
+#downloadForm input,
+#downloadForm select {
+  width: 100%;
+  border: 1px solid #c8d7e6;
+  background: #ffffff;
+  color: #1f2a30;
+  border-radius: 10px;
+  height: 2.2rem;
+  padding: 0 0.72rem;
+  font: inherit;
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+#downloadForm input:focus,
+#downloadForm select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+#downloadForm .downloadGraph {
+  margin-top: 0.35rem;
+  align-self: flex-end;
+  border: 1px solid transparent;
+  background: var(--accent);
+  color: #ffffff;
+  padding-inline: 1.1rem;
+}
+
+#downloadForm .downloadGraph:hover {
+  background: #1976c8;
+}
+
+#downloadForm > button:first-child {
+  align-self: flex-end;
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0;
+  border-radius: 999px;
+  border-color: #bfcddd;
+  color: #5b6b79;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+#downloadForm > button:first-child:hover {
+  color: #243442;
+  background: #edf4fb;
+}
+
+@media (max-width: 700px) {
+  #downloadForm {
+    width: min(92vw, 26rem);
+    padding: 0.85rem;
+    border-radius: 14px;
+  }
+
+  #downloadForm .downloadGraph {
+    width: 100%;
+    align-self: stretch;
+  }
+}

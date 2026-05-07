@@ -1,0 +1,6 @@
+@import "./styles/base.css";
+@import "./styles/websocket.css";
+@import "./styles/context-menu.css";
+@import "./styles/legend.css";
+@import "./styles/graph.css";
+@import "./styles/download-form.css";

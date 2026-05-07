@@ -250,5 +250,27 @@ install(
     FILES
         "${CMAKE_SOURCE_DIR}/src/pyhpp_plot/__init__.py"
         "${CMAKE_SOURCE_DIR}/src/pyhpp_plot/interactive_viewer.py"
+        "${CMAKE_SOURCE_DIR}/src/pyhpp_plot/websocket_bridge.py"
+        "${CMAKE_SOURCE_DIR}/src/pyhpp_plot/utils.py"
+        "${CMAKE_SOURCE_DIR}/src/pyhpp_plot/graph_viewer_thread.py"
+        "${CMAKE_SOURCE_DIR}/src/pyhpp_plot/web_app_server.py"
     DESTINATION "${PYTHON_SITELIB}/pyhpp_plot"
 )
+
+# appWeb
+
+find_program(NPM_EXECUTABLE npm REQUIRED)
+
+set(REACT_APP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/web_app)
+set(REACT_DIST_DIR ${REACT_APP_DIR}/dist)
+
+add_custom_target(
+    web_app_hpp_plot_build
+    ALL
+    COMMAND ${NPM_EXECUTABLE} install
+    COMMAND ${NPM_EXECUTABLE} run build
+    WORKING_DIRECTORY ${REACT_APP_DIR}
+    COMMENT "Building React app"
+)
+
+install(DIRECTORY "${REACT_DIST_DIR}/" DESTINATION "share/hpp-plot/webapp")

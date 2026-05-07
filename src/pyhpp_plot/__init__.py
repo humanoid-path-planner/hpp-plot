@@ -4,18 +4,16 @@ from .graph_viewer import (
     show_graph_blocking,
     show_interactive_graph,
 )
-from .interactive_viewer import (
-    GraphViewerThread,
-    InteractiveGraphViewer,
-    show_interactive_graph_threaded,
-)
+from .graph_viewer_thread import GraphViewerThread
+from .interactive_viewer import InteractiveGraphViewer
+from .websocket_bridge import GraphWebSocketBridge
 
 __all__ = [
     "GraphViewerThread",
+    "GraphWebSocketBridge",
     "InteractiveGraphViewer",
     "MenuActionProxy",
     "show_graph",
     "show_graph_blocking",
     "show_interactive_graph",
-    "show_interactive_graph_threaded",
 ]
