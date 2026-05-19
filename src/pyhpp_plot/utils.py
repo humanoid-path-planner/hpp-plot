@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from typing import Any
+from pyhpp.manipulation.bindings import Graph, Transition
 
 _U64_MOD = 1 << 64
 _I64_MAX = (1 << 63) - 1
@@ -64,20 +65,19 @@ def _get_nc_names(nc_list: Any) -> list[str]:
     return result
 
 
-def _serialize_graph(graph: Any) -> dict[str, Any]:
+def _serialize_graph(graph: Graph) -> dict[str, Any]:
     """Serialize graph structure: states and edges with metadata."""
     if graph is None:
         return {}
     states = graph.getStates() or []
     transitions = graph.getTransitions() or []
 
-    # Pre-compute waypoint states similarly to C++ implementation
     nodeIsWaypointByName = set()
     for edge in transitions:
+        edge: Transition = edge
         try:
-            if edge.isWaypointEdge():
-                nb = _call_optional(edge, ("nbWaypoints",), default=0)
-                # target of inner edges (except the last one) are waypoint states
+            if edge.isWaypointTransition():
+                nb = edge.nbWaypoints()
                 for i in range(nb):
                     inner_edge = edge.waypoint(i)
                     _, target_name = graph.getNodesConnectedByTransition(inner_edge)
