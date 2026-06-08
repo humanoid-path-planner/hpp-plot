@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from typing import Any
+
 from pyhpp.manipulation.bindings import Graph, Transition
 
 _U64_MOD = 1 << 64
