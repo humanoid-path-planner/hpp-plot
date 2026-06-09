@@ -81,6 +81,8 @@ option(
     OFF
 )
 
+option(USE_JS "Run npm install and build from cmake" ON)
+
 if(USE_CORBA)
     add_project_dependency("gepetto-viewer")
     add_project_dependency("gepetto-viewer-corba")
@@ -258,19 +260,20 @@ install(
 )
 
 # appWeb
+if(USE_JS)
+    find_program(NPM_EXECUTABLE npm REQUIRED)
 
-find_program(NPM_EXECUTABLE npm REQUIRED)
+    set(REACT_APP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/web_app)
+    set(REACT_DIST_DIR ${REACT_APP_DIR}/dist)
 
-set(REACT_APP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/web_app)
-set(REACT_DIST_DIR ${REACT_APP_DIR}/dist)
+    add_custom_target(
+        web_app_hpp_plot_build
+        ALL
+        COMMAND ${NPM_EXECUTABLE} install
+        COMMAND ${NPM_EXECUTABLE} run build
+        WORKING_DIRECTORY ${REACT_APP_DIR}
+        COMMENT "Building React app"
+    )
 
-add_custom_target(
-    web_app_hpp_plot_build
-    ALL
-    COMMAND ${NPM_EXECUTABLE} install
-    COMMAND ${NPM_EXECUTABLE} run build
-    WORKING_DIRECTORY ${REACT_APP_DIR}
-    COMMENT "Building React app"
-)
-
-install(DIRECTORY "${REACT_DIST_DIR}/" DESTINATION "share/hpp-plot/webapp")
+    install(DIRECTORY "${REACT_DIST_DIR}/" DESTINATION "share/hpp-plot/webapp")
+endif()
