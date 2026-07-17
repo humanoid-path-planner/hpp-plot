@@ -69,7 +69,10 @@ option(USE_JS "Run npm install and build from cmake" ON)
 option(USE_QT "Start Qt window" OFF)
 
 # Python bindings for native graph viewer
-set(PYTHON_COMPONENTS Interpreter Development NumPy)
+set(PYTHON_COMPONENTS Interpreter)
+if(USE_QT)
+    set(PYTHON_COMPONENTS Interpreter Development NumPy)
+endif()
 findpython()
 
 if(USE_QT)
