@@ -17,9 +17,6 @@ homepage = "https://github.com/cmake-wheel/hpp-plot"
 repository = "https://github.com/cmake-wheel/hpp-plot.git"
 upstream = "https://github.com/humanoid-path-planner/hpp-plot"
 
-[tool.ruff]
-extend-exclude = ["cmake"]
-
 [tool.ruff.lint]
 extend-select = ["I", "NPY", "RUF", "UP", "W"]
 
