@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <package format='3'>
   <name>hpp_plot</name>
-  <version>9.0.0</version>
+  <version>9.0.2</version>
   <description>Plotting tools for HPP</description>
   <author>Joseph Mirabel</author>
   <author>Florent Lamiraux</author>

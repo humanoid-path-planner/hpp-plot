@@ -10,7 +10,7 @@ description = "Plotting tools for HPP"
 license = "BSD-2-Clause"
 name = "hpp-plot"
 requires-python = ">= 3.10"
-version = "9.0.0"
+version = "9.0.2"
 
 [project.urls]
 homepage = "https://github.com/cmake-wheel/hpp-plot"
