@@ -282,6 +282,7 @@ if(USE_JS)
             DESTINATION "share/hpp-plot/webapp"
         )
     else()
+        # tar -c -z -C src/web_app/dist -f webapp.tar.gz .
         # tar -c --xz -C src/web_app/dist -f webapp.tar.xz .
         message(
             WARNING
@@ -291,9 +292,9 @@ if(USE_JS)
         FetchContent_Declare(
             webapp
             URL
-                "https://github.com/humanoid-path-planner/hpp-plot/releases/download/v9.0.0/webapp.tar.xz"
+                "https://github.com/humanoid-path-planner/hpp-plot/releases/download/v9.0.2/webapp.tar.gz"
             URL_HASH
-                "SHA256=deb49dbb5d3f1b9f725f424f99de878cb6ffdb3f289c57dc5a14838afaef33c0"
+                "SHA256=922d8fe3bb62f1205b8701140b4d40ac9741ea723069336bc1c3e0cf3da70bc1"
             DOWNLOAD_EXTRACT_TIMESTAMP ON
         )
         FetchContent_MakeAvailable(webapp)
